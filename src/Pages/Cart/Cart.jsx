@@ -8,7 +8,7 @@ import { FaTrash } from "react-icons/fa";
 function Cart() {
   const { cart, handleRemoveItem, setCart } = useContext(ShopContextCart);
   const [price, setPrice] = useState(0);
-  let amount = 1;
+  const [amount, setAmount] = useState(1);
 
   const handlePrice = () => {
     let initial = 0;
@@ -20,22 +20,18 @@ function Cart() {
 
   useEffect(() => {
     handlePrice();
-  });
+  }, [cart, amount]);
 
-  // const handleChange = (item, num) => {
-  //   let initial = -1;
-  //   cart.forEach((data, index) => {
-  //     if (data.id === item.id) {
-  //       initial = index;
-  //     }
-  //   });
-  //   const tempArray = amount;
-  //   amount = amount += num;
-  //   if (amount === 0) {
-  //     amount = 1;
-  //   }
-  //   setCart([...tempArray]);
-  // };
+  const handleChange = (item, num) => {
+    const index = cart.findIndex((data) => data.id === item.id);
+    const newAmount = amount + num;
+    if (newAmount > 0) {
+      const newCart = [...cart];
+      newCart[index].quantity = newAmount;
+      setCart(newCart);
+      setAmount(newAmount);
+    }
+  };
 
   return (
     <>
@@ -53,8 +49,8 @@ function Cart() {
                 <p>{item.title}</p>
               </div>
               <div>
-                <button onClick={() => handleChange(item, +1)}>+</button>
-                <button>{amount}</button>
+                <button onClick={() => handleChange(item, 1)}>+</button>
+                <button>{item.quantity}</button>
                 <button onClick={() => handleChange(item, -1)}>-</button>
               </div>
               <div>
@@ -77,11 +73,11 @@ function Cart() {
             </div>
           </div>
         )}
-
-
       </section>
     </>
   );
 }
 
 export default Cart;
+
+
