@@ -12,7 +12,7 @@ function Cart() {
 
   const handlePrice = () => {
     let initial = 0;
-    cart.map((item) => {
+    cart.forEach((item) => {
       initial += amount * item.price;
     });
     setPrice(initial);
@@ -23,14 +23,16 @@ function Cart() {
   }, [cart, amount]);
 
   const handleChange = (item, num) => {
-    const index = cart.findIndex((data) => data.id === item.id);
-    const newAmount = amount + num;
-    if (newAmount > 0) {
-      const newCart = [...cart];
-      newCart[index].quantity = newAmount;
-      setCart(newCart);
-      setAmount(newAmount);
-    }
+    let initial = -1;
+    cart.forEach((data, index) => {
+      if (data.id === item.id) {
+        initial = index;
+      }
+    });
+    setAmount((prevAmount) => {
+      const newAmount = prevAmount + num;
+      return newAmount > 0 ? newAmount : prevAmount;
+    });
   };
 
   return (
@@ -42,7 +44,7 @@ function Cart() {
         {cart.length <= 0 && <p className="empty">Your cart is Empty</p>}
 
         {cart.length > 0 &&
-          cart?.map((item) => (
+          cart.map((item) => (
             <div className="cart-box" key={item.id}>
               <div className="product-img">
                 <img src={item.image} alt="" />
@@ -50,7 +52,7 @@ function Cart() {
               </div>
               <div>
                 <button onClick={() => handleChange(item, 1)}>+</button>
-                <button>{item.quantity}</button>
+                <button>{amount}</button>
                 <button onClick={() => handleChange(item, -1)}>-</button>
               </div>
               <div>
@@ -62,9 +64,7 @@ function Cart() {
             </div>
           ))}
 
-        {cart.length <= 0 ? (
-          ""
-        ) : (
+        {cart.length > 0 && (
           <div className="total">
             <span>Total Price</span>
             <span>${price}</span>
@@ -79,5 +79,4 @@ function Cart() {
 }
 
 export default Cart;
-
 
